@@ -1,0 +1,424 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Production builds
+build/
+dist/
+.next/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# Jest
+jest.config.js
+.jest/
+
+# ESLint cache
+.eslintcache
+
+# Webpack
+.webpack/
+
+# Temporary folders
+tmp/
+temp/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite
+
+# MongoDB
+data/
+
+# n8n
+.n8n/
+
+# Ngrok
+ngrok
+*.ngrok
+
+# SSL certificates
+*.pem
+*.crt
+*.key
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Package manager locks (keep one, remove others)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+.tmp
+.temp
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# Sentry Config File
+.sentryclirc
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# JetBrains
+.idea/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Specific to this project
+/api/logs/
+/api/uploads/
+/shell/build/
+/support-tickets-app/build/
+
+# Docker volumes
+mongodb_data/
+n8n_data/
+
+# Test artifacts
+test-results/
+e2e-results/
+
+# Backup and temporary files
+*.backup
+*.tmp
+*.temp
+
+# Security files
+.env.production
+.env.staging
+secrets/
+private/
+
+# Build artifacts
+artifacts/
+releases/
+
+# Monitoring and analytics
+.sentryclirc
+analytics/
+
+# Development tools
+.devcontainer/
+.codespace/
+
+# Local development overrides
+docker-compose.local.yml
+docker-compose.dev.yml
+
+# Performance testing
+loadtest-results/
+performance-results/
+
+# Documentation build
+docs/build/
+docs/dist/
+
+# Internationalization
+locale/
+translations/
+
+# Cache directories
+.cache/
+cache/
+
+# Temporary API keys (never commit real keys)
+*.key.example
+api-keys.example
+
+# Platform specific
+.vercel
+.netlify
+.railway
+
+# Serverless
+.serverless/
+
+# AWS
+.aws/
+
+# Google Cloud
+.gcloud/
+
+# Azure
+.azure/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Ansible
+*.retry
+
+# Vagrant
+.vagrant/
+
+# VirtualBox
+*.vbox
+*.vdi
+
+# VMware
+*.vmx
+*.vmdk
+
+# Kubernetes
+*.kubeconfig
+
+# Helm
+charts/*/Chart.lock
+charts/*/charts/*.tgz
+
+# Skaffold
+skaffold.yaml.local
+
+# Draft
+.draft/
+
+# Local configuration
+local.config.js
+local.config.json
+
+# User-specific files
+user.config.js
+user.config.json
+
+# Machine-specific files
+machine.config.js
+machine.config.json
+
+.env.example

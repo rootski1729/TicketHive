@@ -1,0 +1,56 @@
+{
+  "name": "flowbit-platform",
+  "version": "1.0.0",
+  "description": "Multi-tenant platform with micro-frontends and workflow automation",
+  "scripts": {
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "restart": "docker-compose down && docker-compose up -d",
+    "logs": "docker-compose logs -f",
+    "seed": "docker-compose exec api npm run seed",
+    "test": "docker-compose exec api npm test",
+    "test:watch": "docker-compose exec api npm run test:watch",
+    "build": "docker-compose build",
+    "clean": "docker-compose down -v --remove-orphans",
+    "install:all": "npm install && cd api && npm install && cd ../shell && npm install && cd ../support-tickets-app && npm install",
+    "dev:api": "cd api && npm run dev",
+    "dev:shell": "cd shell && npm start",
+    "dev:tickets": "cd support-tickets-app && npm start",
+    "dev:all": "concurrently \"npm run dev:api\" \"npm run dev:shell\" \"npm run dev:tickets\"",
+    "lint": "eslint . --ext .js,.jsx --ignore-path .gitignore",
+    "lint:fix": "eslint . --ext .js,.jsx --ignore-path .gitignore --fix",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "health": "curl -f http://localhost:3001/health && curl -f http://localhost:3000 && curl -f http://localhost:3002"
+  },
+  "keywords": [
+    "multi-tenant",
+    "micro-frontend",
+    "workflow",
+    "n8n",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "Flowbit Platform Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "eslint": "^8.40.0",
+    "eslint-plugin-react": "^7.32.2",
+    "cypress": "^12.12.0",
+    "wait-on": "^7.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flowbitai/flowbit-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/flowbitai/flowbit-platform/issues"
+  },
+  "homepage": "https://github.com/flowbitai/flowbit-platform#readme"
+}
