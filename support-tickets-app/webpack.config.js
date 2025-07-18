@@ -55,7 +55,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
-      title: 'Support Tickets App'
+      title: 'Support Tickets - Micro Frontend'
     })
   ]
 };

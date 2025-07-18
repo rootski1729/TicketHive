@@ -13,20 +13,20 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
-    const initAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
+    const initializeAuth = async () => {
+      const savedToken = localStorage.getItem('token');
+      if (savedToken) {
         try {
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
           const response = await api.get('/auth/me');
           setUser(response.data.user);
-          setIsAuthenticated(true);
+          setToken(savedToken);
         } catch (error) {
-          console.error('Auth initialization failed:', error);
+          console.error('Token validation failed:', error);
           localStorage.removeItem('token');
           delete api.defaults.headers.common['Authorization'];
         }
@@ -34,66 +34,65 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
 
-    initAuth();
+    initializeAuth();
   }, []);
 
   const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { token, user } = response.data;
+      console.log('Attempting login with:', { email, password });
       
-      localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const response = await api.post('/auth/login', { 
+        email: email.trim(), 
+        password: password.trim() 
+      });
       
-      setUser(user);
-      setIsAuthenticated(true);
+      console.log('Login response:', response.data);
       
-      return { success: true };
+      const { token: newToken, user: userData } = response.data;
+      
+      // Store token
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      
+      // Set authorization header
+      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      
+      // Set user data
+      setUser(userData);
+      
+      console.log('Login successful, user:', userData);
+      
+      return userData;
     } catch (error) {
-      console.error('Login failed:', error);
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Login failed' 
-      };
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await api.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout request failed:', error);
-    } finally {
+      console.error('Login error:', error);
+      
+      // Clean up on error
       localStorage.removeItem('token');
+      setToken(null);
       delete api.defaults.headers.common['Authorization'];
       setUser(null);
-      setIsAuthenticated(false);
+      
+      // Extract error message
+      const errorMessage = error.response?.data?.error || error.message || 'Login failed';
+      throw new Error(errorMessage);
     }
   };
 
-  const refreshToken = async () => {
-    try {
-      const response = await api.post('/auth/refresh');
-      const { token } = response.data;
-      
-      localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      logout();
-      return { success: false };
-    }
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    delete api.defaults.headers.common['Authorization'];
+    setUser(null);
+    console.log('User logged out');
   };
 
   const value = {
     user,
-    isAuthenticated,
+    token,
     loading,
     login,
     logout,
-    refreshToken
+    isAuthenticated: !!user && !!token
   };
 
   return (

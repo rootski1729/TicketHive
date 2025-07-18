@@ -9,7 +9,6 @@ module.exports = {
     port: 3000,
     historyApiFallback: true,
     hot: true,
-    liveReload: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
@@ -56,10 +55,5 @@ module.exports = {
       template: './public/index.html',
       title: 'Flowbit - Multi-Tenant Platform'
     })
-  ],
-  optimization: {
-    splitChunks: {
-      chunks: 'all'
-    }
-  }
+  ]
 };

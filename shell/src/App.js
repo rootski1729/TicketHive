@@ -1,71 +1,125 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/Layout';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ScreenProvider } from './contexts/ScreenContext';
-import api from './services/api';
+import Login from './components/Login';
+import Layout from './components/Layout';
+import Dashboard from './components/Dashboard';
 import './App.css';
 
-function AppContent() {
-  const { user, isAuthenticated, loading } = useAuth();
-  const [screens, setScreens] = useState([]);
-  const [screensLoading, setScreensLoading] = useState(false);
+// Loading component
+const LoadingSpinner = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '50vh',
+    fontSize: '1rem',
+    color: '#666'
+  }}>
+    Loading...
+  </div>
+);
 
-  useEffect(() => {
-    const fetchScreens = async () => {
-      if (isAuthenticated && user) {
-        setScreensLoading(true);
-        try {
-          const response = await api.get('/me/screens');
-          setScreens(response.data.screens || []);
-        } catch (error) {
-          console.error('Failed to fetch screens:', error);
-          setScreens([]);
-        } finally {
-          setScreensLoading(false);
-        }
-      }
-    };
-
-    fetchScreens();
-  }, [isAuthenticated, user]);
-
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    return <LoadingSpinner />;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
+
+// Public Route Component (redirect if authenticated)
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return children;
+};
+
+// Lazy load remote components
+const SupportTicketsApp = React.lazy(() => {
+  return new Promise((resolve) => {
+    // Fallback component if remote fails to load
+    const FallbackComponent = () => (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h2>Support Tickets</h2>
+        <p>This module would load from the micro-frontend at localhost:3002</p>
+        <p>Demo tickets are available via the API for each tenant.</p>
       </div>
     );
-  }
+    
+    try {
+      import('supportTicketsApp/SupportTicketsApp')
+        .then((module) => {
+          resolve({ default: module.default || FallbackComponent });
+        })
+        .catch(() => {
+          console.log('Using fallback component for Support Tickets');
+          resolve({ default: FallbackComponent });
+        });
+    } catch (error) {
+      console.log('Using fallback component for Support Tickets');
+      resolve({ default: FallbackComponent });
+    }
+  });
+});
 
-  if (!isAuthenticated) {
-    return <Login />;
-  }
-
-  return (
-    <ScreenProvider screens={screens} loading={screensLoading}>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/app/:appId" element={<Dashboard />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Layout>
-    </ScreenProvider>
-  );
-}
-
-function App() {
+// Main App Component - No Router here, just Routes
+const App = () => {
   return (
     <AuthProvider>
-      <div className="App">
-        <AppContent />
-      </div>
+      <ScreenProvider>
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            } />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/app/support-tickets" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <SupportTicketsApp />
+                  </Suspense>
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Default redirects */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </div>
+      </ScreenProvider>
     </AuthProvider>
   );
-}
+};
 
 export default App;

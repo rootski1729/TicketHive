@@ -1,53 +1,47 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
-
+// Create axios instance with correct base URL
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: 'http://localhost:3001/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add auth token
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
+    console.log('API Request:', config.method?.toUpperCase(), config.url, config.data);
+    
+    // Add auth token if available
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
     return config;
   },
   (error) => {
+    console.error('Request Error:', error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor to handle token refresh
+// Response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  (response) => {
+    console.log('API Response:', response.status, response.config.url, response.data);
+    return response;
+  },
+  (error) => {
+    console.error('API Error:', error.response?.status, error.response?.data || error.message);
     
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      
-      try {
-        const response = await api.post('/auth/refresh');
-        const { token } = response.data;
-        
-        localStorage.setItem('token', token);
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        originalRequest.headers.Authorization = `Bearer ${token}`;
-        
-        return api(originalRequest);
-      } catch (refreshError) {
-        localStorage.removeItem('token');
-        delete api.defaults.headers.common['Authorization'];
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      }
+    // Handle 401 unauthorized
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
+      window.location.href = '/';
     }
     
     return Promise.reject(error);

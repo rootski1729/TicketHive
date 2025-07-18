@@ -65,7 +65,7 @@ services:
     container_name: flowbit_support_tickets
     restart: always
     environment:
-      - REACT_APP_API_URL=http://localhost:3001
+      - REACT_APP_API_URL=http://localhost:3002
     ports:
       - "3002:3002"
     depends_on:

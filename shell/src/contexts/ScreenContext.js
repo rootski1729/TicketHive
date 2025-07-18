@@ -1,4 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import api from '../services/api';
 
 const ScreenContext = createContext();
 
@@ -10,28 +12,73 @@ export const useScreens = () => {
   return context;
 };
 
-export const ScreenProvider = ({ children, screens, loading }) => {
-  const getScreenById = (id) => {
-    return screens.find(screen => screen.id === id);
-  };
+export const ScreenProvider = ({ children }) => {
+  const [screens, setScreens] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
-  const getScreensByPermission = (permission) => {
-    return screens.filter(screen => 
-      screen.permissions && screen.permissions.includes(permission)
-    );
-  };
+  useEffect(() => {
+    const fetchScreens = async () => {
+      if (!isAuthenticated || !user) {
+        setScreens([]);
+        return;
+      }
 
-  const hasPermission = (screenId, permission) => {
-    const screen = getScreenById(screenId);
-    return screen && screen.permissions && screen.permissions.includes(permission);
+      setLoading(true);
+      try {
+        // For demo, we'll define screens based on user's tenant
+        const defaultScreens = [
+          {
+            id: 'support-tickets',
+            name: 'Support Tickets',
+            url: 'http://localhost:3002/remoteEntry.js',
+            scope: 'supportTicketsApp',
+            module: './SupportTicketsApp',
+            icon: 'ticket',
+            path: '/app/support-tickets'
+          }
+        ];
+
+        // Try to fetch from API, fallback to default
+        try {
+          const response = await api.get('/me/screens', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          setScreens(response.data.screens || defaultScreens);
+        } catch (apiError) {
+          console.log('Using default screens, API call failed:', apiError.message);
+          setScreens(defaultScreens);
+        }
+        
+      } catch (error) {
+        console.error('Error fetching screens:', error);
+        setScreens([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchScreens();
+  }, [user, isAuthenticated]);
+
+  const getScreenById = (screenId) => {
+    return screens.find(screen => screen.id === screenId);
   };
 
   const value = {
     screens,
     loading,
     getScreenById,
-    getScreensByPermission,
-    hasPermission
+    refreshScreens: () => {
+      // Re-fetch screens if needed
+      if (isAuthenticated && user) {
+        setLoading(true);
+        // Trigger useEffect to re-run
+        setScreens([]);
+      }
+    }
   };
 
   return (
