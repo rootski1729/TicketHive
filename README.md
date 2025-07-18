@@ -2,7 +2,7 @@
 
 A comprehensive multi-tenant platform demonstrating advanced architectural patterns including micro-frontends, workflow automation, and secure tenant isolation.
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -26,9 +26,9 @@ A comprehensive multi-tenant platform demonstrating advanced architectural patte
 └─────────────────┘                    └─────────────────┘
 ```
 
-## 🚀 Features
+## Features
 
-### ✅ Core Requirements Implemented
+### Core Requirements Implemented
 
 - **R1: Auth & RBAC** - JWT-based authentication with role-based access control
 - **R2: Tenant Data Isolation** - Strict data separation with MongoDB indexes
@@ -37,13 +37,13 @@ A comprehensive multi-tenant platform demonstrating advanced architectural patte
 - **R5: Workflow Ping** - n8n integration with webhook callbacks
 - **R6: Containerized Dev** - Complete Docker Compose setup
 
-### 🎯 Bonus Features
+### Bonus Features
 
 - **Audit Log** - Complete action tracking with timestamp and user info
 - **Cypress Tests** - End-to-end testing suite (see `/cypress` directory)
 - **GitHub Actions** - CI/CD pipeline for linting and testing
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - **Node.js** with Express.js
@@ -64,7 +64,7 @@ A comprehensive multi-tenant platform demonstrating advanced architectural patte
 - **Ngrok** for webhook testing
 - **Jest** for unit testing
 
-## 📦 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose
@@ -123,7 +123,7 @@ docker-compose exec api npm run seed
 - **Admin**: admin@retailgmbh.com / password123
 - **User**: user@retailgmbh.com / password123
 
-## 🧪 Testing
+## Testing
 
 ### Run Unit Tests
 ```bash
@@ -149,7 +149,7 @@ npm install cypress
 npx cypress open
 ```
 
-## 🔧 Development
+## Development
 
 ### Local Development Setup
 ```bash
@@ -188,7 +188,7 @@ cd support-tickets-app && npm start
 - `POST /webhook/ticket-done` - n8n workflow completion callback
 - `POST /webhook/generic` - Generic webhook endpoint
 
-## 🔐 Security Features
+## Security Features
 
 ### Tenant Isolation
 - MongoDB collections include `customerId` field
@@ -208,7 +208,7 @@ cd support-tickets-app && npm start
 - XSS protection
 - CORS configuration
 
-## 🔄 Workflow Integration
+## Workflow Integration
 
 ### n8n Setup
 1. Access n8n at http://localhost:5678
@@ -224,7 +224,7 @@ cd support-tickets-app && npm start
 5. API updates ticket status in MongoDB
 6. Frontend shows updated status
 
-## 📊 Monitoring & Logging
+## Monitoring & Logging
 
 ### Health Checks
 - `GET /health` - API server health
@@ -244,7 +244,7 @@ All user actions are logged with:
 - Database query performance
 - Memory and CPU usage metrics
 
-## 🐳 Docker Services
+## Docker Services
 
 | Service | Port | Description |
 |---------|------|-------------|
@@ -255,7 +255,7 @@ All user actions are logged with:
 | n8n | 5678 | Workflow automation |
 | ngrok | 4040 | Tunnel for webhook testing |
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -297,7 +297,7 @@ docker-compose up
 docker-compose logs -f --tail=100 api
 ```
 
-## 📈 Performance Optimization
+## Performance Optimization
 
 ### Database Indexing
 - Compound indexes for tenant isolation
@@ -314,7 +314,7 @@ docker-compose logs -f --tail=100 api
 - Caching strategies
 - Rate limiting implementation
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -322,31 +322,3 @@ docker-compose logs -f --tail=100 api
 4. Add tests for new features
 5. Run the test suite
 6. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 📞 Support
-
-For technical support or questions:
-- Email: soham.shah@flowbitai.com
-- LinkedIn: Follow Flowbit page for updates
-- GitHub Issues: Create an issue for bugs or feature requests
-
-## 🎯 Demo Video Requirements
-
-When creating your demo video, please show:
-
-1. **Login Process** - Login as different tenants
-2. **Tenant Isolation** - Show data separation between tenants
-3. **Ticket Creation** - Create tickets and trigger workflows
-4. **Workflow Execution** - Show n8n processing and callback
-5. **Status Updates** - Demonstrate real-time status changes
-6. **Role-Based Access** - Show Admin vs User permissions
-
-**Video should be ≤ 3 minutes and clearly demonstrate the full flow working.**
-
----
-
-*Built with ❤️ for the Flowbit technical challenge*

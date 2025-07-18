@@ -1,8 +1,8 @@
-# Flowbit Platform Setup Guide
+# TICKETHIVE Platform Setup Guide
 
 This guide will help you set up the Flowbit multi-tenant platform from scratch.
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before starting, ensure you have the following installed:
 
@@ -18,7 +18,7 @@ Before starting, ensure you have the following installed:
 - **Storage**: 2GB free space
 - **OS**: Linux, macOS, or Windows with WSL2
 
-## 🚀 Quick Start (5 minutes)
+## Quick Start (5 minutes)
 
 ### 1. Clone the Repository
 
@@ -72,7 +72,7 @@ Use these credentials to test different tenants:
 - Admin: `admin@retailgmbh.com` / `password123`
 - User: `user@retailgmbh.com` / `password123`
 
-## 🔧 Detailed Setup
+## Detailed Setup
 
 ### Environment Configuration
 
@@ -136,7 +136,7 @@ npm start
 docker-compose up -d n8n
 ```
 
-## 🧪 Testing Setup
+## Testing Setup
 
 ### Unit Tests
 
@@ -174,7 +174,7 @@ npx cypress run
 npx cypress open
 ```
 
-## 🔍 n8n Workflow Setup
+## n8n Workflow Setup
 
 ### 1. Access n8n
 
@@ -200,7 +200,7 @@ npx cypress open
 2. Check n8n executions to see the workflow run
 3. Verify the ticket status updates in the application
 
-## 🌐 Webhook Testing with Ngrok
+## Webhook Testing with Ngrok
 
 ### 1. Set up Ngrok
 
@@ -226,7 +226,7 @@ open http://localhost:4040
 
 Update your n8n workflow to use the public ngrok URL for callbacks.
 
-## 📊 Monitoring & Debugging
+## Monitoring & Debugging
 
 ### View Logs
 
@@ -269,7 +269,7 @@ docker-compose ps
 docker system df
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -331,7 +331,7 @@ docker-compose up -d
 docker-compose exec api npm run seed
 ```
 
-## 🚀 Production Deployment
+## Production Deployment
 
 ### Environment Variables
 
@@ -362,7 +362,7 @@ MONGODB_URI=mongodb://user:pass@production-mongo:27017/flowbit
 - Configure auto-scaling
 - Monitor resource usage
 
-## 📝 Configuration Reference
+## Configuration Reference
 
 ### API Configuration
 
@@ -413,7 +413,7 @@ N8N_PROTOCOL=http
 WEBHOOK_URL=http://n8n:5678/
 ```
 
-## 🤝 Development Workflow
+## Development Workflow
 
 ### 1. Making Changes
 
@@ -471,7 +471,7 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [API Documentation](API.md)
 - [Frontend Architecture](FRONTEND.md)
@@ -479,16 +479,7 @@ git push origin v1.0.0
 - [Security Guide](SECURITY.md)
 - [Performance Optimization](PERFORMANCE.md)
 
-## 🆘 Support
-
-If you encounter issues:
-
-1. Check the troubleshooting section above
-2. Review the logs: `docker-compose logs -f`
-3. Create an issue in the repository
-4. Contact the development team
-
-## 🎯 Next Steps
+## Next Steps
 
 After setup, consider:
 
@@ -500,4 +491,4 @@ After setup, consider:
 
 ---
 
-*Happy coding! 🚀*
+*Happy coding! *
