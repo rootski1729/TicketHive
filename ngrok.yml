@@ -1,0 +1,20 @@
+version: "2"
+authtoken: ${NGROK_AUTHTOKEN}
+tunnels:
+  api:
+    proto: http
+    addr: api:3001
+    inspect: false
+    bind_tls: true
+  shell:
+    proto: http
+    addr: shell:3000
+    inspect: false
+    bind_tls: true
+  tickets:
+    proto: http
+    addr: support-tickets-app:3002
+    inspect: false
+    bind_tls: true
+web_addr: 0.0.0.0:4040
+region: us

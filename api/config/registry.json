@@ -1,0 +1,60 @@
+{
+  "tenants": {
+    "LogisticsCo": [
+      {
+        "id": "support-tickets",
+        "name": "Support Tickets",
+        "url": "http://localhost:3002/remoteEntry.js",
+        "scope": "supportTicketsApp",
+        "module": "./SupportTicketsApp",
+        "icon": "ticket",
+        "description": "Manage and track support tickets",
+        "permissions": ["read", "write", "delete"]
+      },
+      {
+        "id": "logistics-dashboard",
+        "name": "Logistics Dashboard",
+        "url": "http://localhost:3002/remoteEntry.js",
+        "scope": "supportTicketsApp",
+        "module": "./DashboardApp",
+        "icon": "dashboard",
+        "description": "View logistics metrics and KPIs",
+        "permissions": ["read"]
+      }
+    ],
+    "RetailGmbH": [
+      {
+        "id": "support-tickets",
+        "name": "Support Tickets",
+        "url": "http://localhost:3002/remoteEntry.js",
+        "scope": "supportTicketsApp",
+        "module": "./SupportTicketsApp",
+        "icon": "ticket",
+        "description": "Manage customer support requests",
+        "permissions": ["read", "write"]
+      },
+      {
+        "id": "retail-analytics",
+        "name": "Retail Analytics",
+        "url": "http://localhost:3002/remoteEntry.js",
+        "scope": "supportTicketsApp",
+        "module": "./AnalyticsApp",
+        "icon": "analytics",
+        "description": "Analyze sales and customer data",
+        "permissions": ["read"]
+      }
+    ]
+  },
+  "defaultScreens": [
+    {
+      "id": "support-tickets",
+      "name": "Support Tickets",
+      "url": "http://localhost:3002/remoteEntry.js",
+      "scope": "supportTicketsApp",
+      "module": "./SupportTicketsApp",
+      "icon": "ticket",
+      "description": "Default support ticket management",
+      "permissions": ["read", "write"]
+    }
+  ]
+}

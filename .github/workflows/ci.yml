@@ -1,0 +1,249 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    services:
+      mongodb:
+        image: mongo:6.0
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: password123
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongosh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd api && npm ci
+        cd ../shell && npm ci
+        cd ../support-tickets-app && npm ci
+    
+    - name: Run ESLint
+      run: |
+        cd api && npm run lint || true
+        cd ../shell && npx eslint src --ext .js,.jsx || true
+        cd ../support-tickets-app && npx eslint src --ext .js,.jsx || true
+    
+    - name: Set up environment variables
+      run: |
+        echo "MONGODB_URI=mongodb://admin:password123@localhost:27017/flowbit_test?authSource=admin" >> $GITHUB_ENV
+        echo "JWT_SECRET=test-jwt-secret-for-github-actions" >> $GITHUB_ENV
+        echo "WEBHOOK_SECRET=test-webhook-secret" >> $GITHUB_ENV
+        echo "NODE_ENV=test" >> $GITHUB_ENV
+    
+    - name: Run API tests
+      run: |
+        cd api && npm test
+      env:
+        MONGODB_URI: mongodb://admin:password123@localhost:27017/flowbit_test?authSource=admin
+        JWT_SECRET: test-jwt-secret-for-github-actions
+        WEBHOOK_SECRET: test-webhook-secret
+        NODE_ENV: test
+    
+    - name: Build frontend applications
+      run: |
+        cd shell && npm run build
+        cd ../support-tickets-app && npm run build
+    
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: |
+          shell/dist
+          support-tickets-app/dist
+    
+    - name: Run security audit
+      run: |
+        npm audit --audit-level=moderate
+        cd api && npm audit --audit-level=moderate
+        cd ../shell && npm audit --audit-level=moderate
+        cd ../support-tickets-app && npm audit --audit-level=moderate
+      continue-on-error: true
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build API Docker image
+      run: |
+        cd api && docker build -t flowbit-api:latest .
+    
+    - name: Build Shell Docker image
+      run: |
+        cd shell && docker build -t flowbit-shell:latest .
+    
+    - name: Build Support Tickets Docker image
+      run: |
+        cd support-tickets-app && docker build -t flowbit-support-tickets:latest .
+    
+    - name: Test Docker Compose
+      run: |
+        docker-compose config
+        docker-compose up -d --build
+        sleep 30
+        docker-compose ps
+        docker-compose logs
+        docker-compose down
+    
+    - name: Check Docker images
+      run: |
+        docker images | grep flowbit
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Use Node.js 18
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Start application
+      run: |
+        docker-compose up -d
+        sleep 60
+        docker-compose ps
+    
+    - name: Wait for application to be ready
+      run: |
+        npx wait-on http://localhost:3000 --timeout 60000
+        npx wait-on http://localhost:3001/health --timeout 60000
+        npx wait-on http://localhost:3002 --timeout 60000
+    
+    - name: Seed database
+      run: |
+        docker-compose exec -T api npm run seed
+    
+    - name: Run Cypress tests
+      run: |
+        npx cypress run --headless
+      env:
+        CYPRESS_baseUrl: http://localhost:3000
+        CYPRESS_apiUrl: http://localhost:3001
+    
+    - name: Upload Cypress screenshots
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: cypress-screenshots
+        path: cypress/screenshots
+    
+    - name: Upload Cypress videos
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: cypress-videos
+        path: cypress/videos
+    
+    - name: Stop application
+      run: docker-compose down
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+    
+    - name: Upload result to GitHub Code Scanning
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: snyk.sarif
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [lint-and-test, docker-build, e2e-tests]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Deploy to staging (mock)
+      run: |
+        echo "Deploying to staging environment..."
+        echo "This would typically deploy to a staging server"
+        echo "For now, just showing the deployment would work"
+    
+    - name: Notify team
+      run: |
+        echo "Deployment completed successfully!"
+        echo "Application is ready for testing"
+
+  performance-test:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Start application
+      run: |
+        docker-compose up -d
+        sleep 60
+    
+    - name: Run performance tests
+      run: |
+        echo "Running performance tests..."
+        # This would typically use k6, Artillery, or similar tools
+        curl -s -w "%{time_total}s\n" -o /dev/null http://localhost:3001/health
+        curl -s -w "%{time_total}s\n" -o /dev/null http://localhost:3000
+    
+    - name: Stop application
+      run: docker-compose down

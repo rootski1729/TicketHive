@@ -1,0 +1,417 @@
+{
+  "name": "Flowbit Ticket Processing Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "flowbit-trigger",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "flowbit-webhook-id"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "ticketId",
+              "value": "={{ $json.ticketId }}"
+            },
+            {
+              "name": "customerId",
+              "value": "={{ $json.customerId }}"
+            },
+            {
+              "name": "title",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "name": "priority",
+              "value": "={{ $json.priority }}"
+            },
+            {
+              "name": "workflowId",
+              "value": "={{ $runIndex }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-data",
+      "name": "Extract Ticket Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.priority }}",
+              "operation": "equal",
+              "value2": "Critical"
+            }
+          ]
+        }
+      },
+      "id": "priority-check",
+      "name": "Check Priority",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "wait-critical",
+      "name": "Quick Processing",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        900,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "id": "wait-normal",
+      "name": "Normal Processing",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        900,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "processingResult",
+              "value": "Ticket processed successfully"
+            },
+            {
+              "name": "processedAt",
+              "value": "={{ $now }}"
+            },
+            {
+              "name": "status",
+              "value": "In Progress"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-result",
+      "name": "Set Processing Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://api:3001/webhook/ticket-done",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  \"ticketId\": $json.ticketId,\n  \"customerId\": $json.customerId,\n  \"status\": $json.status,\n  \"workflowId\": $json.workflowId,\n  \"processingResult\": $json.processingResult,\n  \"processedAt\": $json.processedAt\n}) }}",
+        "options": {
+          "headers": {
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Flowbit-Secret",
+                "value": "webhook-secret-key-123"
+              }
+            ]
+          }
+        }
+      },
+      "id": "callback-webhook",
+      "name": "Callback to Flowbit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  \"success\": true,\n  \"workflowId\": $json.workflowId,\n  \"message\": \"Ticket processing started\",\n  \"timestamp\": $now\n}) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        460,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.customerId }}",
+              "operation": "equal",
+              "value2": "LogisticsCo"
+            }
+          ]
+        }
+      },
+      "id": "tenant-check",
+      "name": "Check Tenant",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        680,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "specialProcessing",
+              "value": "Applied LogisticsCo specific processing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "logistics-processing",
+      "name": "Logistics Processing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        900,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "specialProcessing",
+              "value": "Applied standard processing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "standard-processing",
+      "name": "Standard Processing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        900,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "merge-data",
+      "name": "Merge Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        600
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Ticket Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Ticket Data": {
+      "main": [
+        [
+          {
+            "node": "Check Priority",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Priority": {
+      "main": [
+        [
+          {
+            "node": "Quick Processing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normal Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quick Processing": {
+      "main": [
+        [
+          {
+            "node": "Set Processing Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normal Processing": {
+      "main": [
+        [
+          {
+            "node": "Set Processing Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Processing Result": {
+      "main": [
+        [
+          {
+            "node": "Callback to Flowbit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Tenant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Tenant": {
+      "main": [
+        [
+          {
+            "node": "Logistics Processing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Standard Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logistics Processing": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard Processing": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "UTC",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": {
+      "enabled": false
+    }
+  },
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "flowbit-instance"
+  },
+  "id": "flowbit-ticket-workflow",
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "flowbit-tag",
+      "name": "flowbit"
+    }
+  ]
+}
