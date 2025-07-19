@@ -178,12 +178,16 @@ jobs:
       
     - name: Create deployment archive
       run: |
-        tar -czf tickethive-deployment.tar.gz \
-          --exclude='.git' \
-          --exclude='node_modules' \
-          --exclude='*/node_modules' \
-          --exclude='.env' \
-          .
+        # Create clean directory structure
+        mkdir -p deployment-temp
+        cp -r api shell support-tickets-app deployment-temp/
+        cp docker-compose.yml init-mongo.js deployment-temp/ || true
+        
+        # Create archive from clean directory
+        tar -czf tickethive-deployment.tar.gz -C deployment-temp .
+        
+        # Cleanup
+        rm -rf deployment-temp
     
     - name: Copy deployment package to EC2
       uses: appleboy/scp-action@master
