@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowbit - Multi-Tenant Platform</title>
+    <meta name="description" content="Flowbit multi-tenant platform with micro-frontend architecture">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        /* Loading screen styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-text {
+            margin-top: 1rem;
+            color: #64748b;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Hide loading screen when app is ready */
+        .app-ready .loading-screen {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Flowbit...</div>
+        </div>
+    </div>
+    
+    <script>
+        // Add app-ready class when React app loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.body.classList.add('app-ready');
+            }, 100);
+        });
+        
+        // Error handling for module federation
+        window.addEventListener('error', function(event) {
+            if (event.error && event.error.message && event.error.message.includes('Loading chunk')) {
+                console.warn('Module federation loading error, attempting to reload:', event.error);
+                // Optionally reload the page or show a retry button
+            }
+        });
+    </script>
+</body>
+</html>
