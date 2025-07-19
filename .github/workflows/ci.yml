@@ -1,5 +1,9 @@
 name: CI/CD Pipeline
 
+permissions:
+  security-events: write
+  contents: read
+
 on:
   push:
     branches: [ main, develop ]
