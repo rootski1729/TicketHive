@@ -182,7 +182,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        password: ${{ secrets.EC2_PASSWORD }}
         port: 22
         source: "tickethive-deployment.tar.gz"
         target: "/home/ubuntu/"
@@ -192,7 +192,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        password: ${{ secrets.EC2_PASSWORD }}
         port: 22
         script: |
           # Create backup of current deployment
@@ -238,7 +238,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        password: ${{ secrets.EC2_PASSWORD }}
         port: 22
         script: |
           cd /home/ubuntu/TicketHive
@@ -267,7 +267,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        password: ${{ secrets.EC2_PASSWORD }}
         port: 22
         script: |
           # Keep only last 3 backups
@@ -281,7 +281,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        password: ${{ secrets.EC2_PASSWORD }}
         port: 22
         script: |
           echo "🚨 Deployment failed! Rolling back..."
@@ -309,7 +309,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        password: ${{ secrets.EC2_PASSWORD }}
         port: 22
         script: |
           cd /home/ubuntu/TicketHive
