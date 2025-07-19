@@ -102,7 +102,6 @@ ngrok
 *.tmp
 
 # Package manager locks (keep one, remove others)
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
