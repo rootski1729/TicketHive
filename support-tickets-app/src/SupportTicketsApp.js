@@ -46,7 +46,27 @@ const SupportTicketsApp = () => {
   };
 
   useEffect(() => {
-    fetchTickets();
+    // Check if running standalone (no token) - use demo data
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Demo data for standalone mode
+      setTickets([
+        {
+          _id: 'demo1',
+          title: 'Demo Ticket - Standalone Mode',
+          description: 'This is a demo ticket showing the micro-frontend works independently',
+          status: 'Open',
+          priority: 'Medium',
+          customerId: 'Demo',
+          createdAt: new Date(),
+          createdBy: { email: 'demo@example.com' },
+          tags: ['demo', 'standalone']
+        }
+      ]);
+      setLoading(false);
+    } else {
+      fetchTickets();
+    }
   }, []);
 
   const fetchTickets = async () => {

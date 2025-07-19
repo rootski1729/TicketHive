@@ -97,26 +97,7 @@ services:
     networks:
       - flowbit_network
 
-  ngrok:
-    image: ngrok/ngrok:latest
-    container_name: flowbit_ngrok
-    restart: always
-    command: 
-      - "start"
-      - "--all"
-      - "--config"
-      - "/etc/ngrok.yml"
-    environment:
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN:-}
-    volumes:
-      - ./ngrok.yml:/etc/ngrok.yml
-    ports:
-      - "4040:4040"
-    depends_on:
-      - api
-    networks:
-      - flowbit_network
-
+  
 volumes:
   mongodb_data:
   n8n_data:
