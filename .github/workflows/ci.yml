@@ -120,11 +120,11 @@ jobs:
       
     - name: Build Docker images
       run: |
-        docker-compose build --parallel
+        docker compose build --parallel
         
     - name: Test Docker deployment
       run: |
-        docker-compose up -d
+        docker compose up -d
         sleep 30
         # Test API health
         curl -f http://localhost:3001/health || exit 1
@@ -132,7 +132,7 @@ jobs:
         curl -f http://localhost:3000 || exit 1
         # Test Support Tickets
         curl -f http://localhost:3002 || exit 1
-        docker-compose down
+        docker compose down
 
     - name: Login to Docker Hub (if deploying)
       if: success()
@@ -229,14 +229,14 @@ jobs:
           EOF
           
           # Stop existing containers gracefully
-          docker-compose down --timeout 30 || true
+          docker compose down --timeout 30 || true
           
           # Clean up old images
           docker system prune -f || true
           
           # Build and start new deployment
-          docker-compose build --no-cache --parallel
-          docker-compose up -d
+          docker compose build --no-cache --parallel
+          docker compose up -d
           
           # Wait for services to start
           sleep 45
@@ -265,7 +265,7 @@ jobs:
           curl -f http://localhost:5678/healthz || echo "n8n health check skipped"
           
           # Check container status
-          docker-compose ps
+          docker compose ps
           
           echo "✅ Deployment successful! All services are healthy."
           
@@ -296,7 +296,7 @@ jobs:
           cd /home/ubuntu
           
           # Stop failed deployment
-          cd TicketHive && docker-compose down || true
+          cd TicketHive && docker compose down || true
           cd ..
           
           # Restore latest backup
@@ -305,7 +305,7 @@ jobs:
             rm -rf TicketHive
             mv "$LATEST_BACKUP" TicketHive
             cd TicketHive
-            docker-compose up -d
+            docker compose up -d
             echo "✅ Rollback completed"
           else
             echo "❌ No backup found for rollback"
@@ -322,7 +322,7 @@ jobs:
         script: |
           cd /home/ubuntu/TicketHive
           echo "📊 Final deployment status:"
-          docker-compose ps
+          docker compose ps
           echo "🌐 Application URLs:"
           echo "- Shell App: http://${{ secrets.EC2_HOST }}:3000"
           echo "- API: http://${{ secrets.EC2_HOST }}:3001"
